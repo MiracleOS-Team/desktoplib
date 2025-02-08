@@ -2,9 +2,14 @@ package foreignToplevel
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os/exec"
+	"regexp"
 	"strings"
+
+	"github.com/MiracleOS-Team/libxdg-go/icons"
 )
 
 // Toplevel represents a toplevel window with relevant attributes
@@ -97,4 +102,43 @@ func SelectToplevel(toplevel Toplevel) error {
 	}
 
 	return nil
+}
+
+// loadRules reads the JSON file and returns a map of regex patterns to replacements.
+func loadAliases(filename string) (map[string]string, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var rules map[string]string
+	if err := json.Unmarshal(data, &rules); err != nil {
+		return nil, err
+	}
+
+	return rules, nil
+}
+
+func GetIconFromToplevel(toplevel Toplevel, size int, scale int) (string, error) {
+	icon_name := toplevel.AppID
+
+	rules, err := loadAliases("/opt/miracleos-software/desk-data/app-icons-alias.json")
+	if err == nil {
+		for pattern, replacement := range rules {
+			// Remove the `/g` flag if present in the JSON file.
+			cleanPattern := pattern
+			if pattern[0] == '/' && pattern[len(pattern)-2:] == "/g" {
+				cleanPattern = pattern[1 : len(pattern)-2]
+			}
+
+			re := regexp.MustCompile(cleanPattern)
+			if re.MatchString(icon_name) {
+				icon_name = replacement
+			}
+		}
+	} else {
+		return "", err
+	}
+
+	return icons.FindIconDefaults(icon_name, size, scale, "application-x-executable")
 }

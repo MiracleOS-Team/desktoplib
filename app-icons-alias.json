@@ -1,0 +1,8 @@
+{
+    "/[V,v]irtualbox.*/g": "virtualbox",
+    "/.*pycharm.*/g": "pycharm",
+    "/.*writerside.*/g": "writerside",
+    "/[M,m]inecraft.*/g": "minecraft",
+    "/balena-etcher.bin/g": "balena-etcher",
+    "/Code/g": "code"
+}
