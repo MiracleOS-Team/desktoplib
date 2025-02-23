@@ -142,7 +142,6 @@ func GetIconFromToplevel(toplevel Toplevel, size int, scale int) (string, error)
 
 	ic, err := icons.FindIconDefaults(icon_name, size, scale, "application-x-executable")
 	if strings.Contains(ic, "application-x-executable") {
-		fmt.Println(strings.ToLower(icon_name))
 		ic, err = icons.FindIconDefaults(strings.ToLower(icon_name), size, scale, "application-x-executable")
 
 	}
