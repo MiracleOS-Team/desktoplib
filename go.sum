@@ -1,5 +1,7 @@
 github.com/MiracleOS-Team/libxdg-go v0.0.0-20250203122932-0d6a9fc71582 h1:Ce5u6O6M1586/JQxVvGr/GCClbxUJbtRPckg4ZfFawY=
 github.com/MiracleOS-Team/libxdg-go v0.0.0-20250203122932-0d6a9fc71582/go.mod h1:mKskdRQzPihHpgc1aUN06dlR2ECTxQWgPzOY3u2To+I=
+github.com/MiracleOS-Team/libxdg-go v0.0.0-20250223113448-cfaa7a3ded96 h1:M/Ki+QZFalVLDZM/wBZBWJoq7XdvAEGYZvDg490uKHY=
+github.com/MiracleOS-Team/libxdg-go v0.0.0-20250223113448-cfaa7a3ded96/go.mod h1:GA/p+ukjyXCsrcpGvs0/gFp1NeHAMtJG/sYT0JcImfE=
 github.com/distatus/battery v0.11.0 h1:KJk89gz90Iq/wJtbjjM9yUzBXV+ASV/EG2WOOL7N8lc=
 github.com/distatus/battery v0.11.0/go.mod h1:KmVkE8A8hpIX4T78QRdMktYpEp35QfOL8A8dwZBxq2k=
 github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=

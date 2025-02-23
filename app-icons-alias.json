@@ -3,5 +3,6 @@
     "/.*pycharm.*/g": "pycharm",
     "/.*writerside.*/g": "writerside",
     "/[M,m]inecraft.*/g": "minecraft",
-    "/balena-etcher.bin/g": "balena-etcher"
+    "/balena-etcher.bin/g": "balena-etcher",
+    "/.*[F,f]irefox.*/g": "firefox"
 }
