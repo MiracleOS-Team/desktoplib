@@ -18,13 +18,13 @@ func GetBatteryIcon() string {
 
 	bat := batteries[0]
 	charge := GetBatteryPercentage(bat)
-	state := bat.State.GoString()
+	state := bat.State.Raw
 
 	var icon string
 	switch state {
-	case "Full":
+	case battery.Full:
 		icon = "battery-full-charged-symbolic"
-	case "Charging":
+	case battery.Charging:
 		if charge >= 90 {
 			icon = "battery-full-charging-symbolic"
 		} else if charge >= 70 {
@@ -36,16 +36,16 @@ func GetBatteryIcon() string {
 		} else {
 			icon = "battery-empty-charging-symbolic"
 		}
-	case "Discharging":
+	case battery.Discharging:
 		if charge >= 90 {
 			icon = "battery-full-symbolic"
-		} else if charge >= 70 {
+		} else if charge <= 70 {
 			icon = "battery-good-symbolic"
-		} else if charge >= 40 {
+		} else if charge <= 40 {
 			icon = "battery-low-symbolic"
-		} else if charge >= 10 {
+		} else if charge <= 20 {
 			icon = "battery-caution-symbolic"
-		} else {
+		} else if charge <= 5 {
 			icon = "battery-empty-symbolic"
 		}
 	default:

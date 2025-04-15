@@ -10,6 +10,12 @@ import (
 	"strings"
 
 	"github.com/MiracleOS-Team/libxdg-go/icons"
+
+	"github.com/BurntSushi/xgb/xproto"
+	"github.com/BurntSushi/xgbutil"
+	"github.com/BurntSushi/xgbutil/ewmh"
+	"github.com/BurntSushi/xgbutil/icccm"
+	"github.com/BurntSushi/xgbutil/xwindow"
 )
 
 // Toplevel represents a toplevel window with relevant attributes
@@ -35,11 +41,41 @@ func runWlrctlCommand(args []string) (string, error) {
 	return stdout.String(), nil
 }
 
+func listToplevelsXorg() ([]Toplevel, error) {
+	var tpl []Toplevel
+
+	X, err := xgbutil.NewConn()
+	if err != nil {
+		return tpl, err
+	}
+
+	// List top-level windows
+	clientList, err := ewmh.ClientListGet(X)
+	if err != nil {
+		return tpl, err
+	}
+
+	for _, win := range clientList {
+		name, _ := ewmh.WmNameGet(X, win)
+		class, _ := icccm.WmClassGet(X, win)
+
+		ntpl := Toplevel{
+			Title: name,
+			AppID: class.Class,
+		}
+
+		tpl = append(tpl, ntpl)
+	}
+
+	return tpl, nil
+}
+
 // ListToplevels lists all toplevel windows and parses the output into Toplevel structs
 func ListToplevels() ([]Toplevel, error) {
 	output, err := runWlrctlCommand([]string{"toplevel", "list"})
 	if err != nil {
-		return nil, err
+		// Fallback to Xorg support
+		return listToplevelsXorg()
 	}
 
 	// Parse the toplevel information into structs
@@ -92,13 +128,52 @@ func generateMatchSpecifiers(toplevel Toplevel) []string {
 	return matchSpecs
 }
 
+func selectToplevelXorg(toplevel Toplevel) error {
+	X, err := xgbutil.NewConn()
+	if err != nil {
+		return err
+	}
+
+	clientList, err := ewmh.ClientListGet(X)
+	if err != nil {
+		return err
+	}
+
+	var matchedWin xproto.Window
+	for _, win := range clientList {
+		title, _ := ewmh.WmNameGet(X, win)
+		class, _ := icccm.WmClassGet(X, win)
+
+		if strings.Contains(strings.ToLower(title), strings.ToLower(toplevel.Title)) &&
+			strings.EqualFold(class.Class, toplevel.AppID) {
+
+			matchedWin = win
+			break
+		}
+	}
+
+	if matchedWin == 0 {
+		return fmt.Errorf("no matching window")
+	}
+
+	xw := xwindow.New(X, matchedWin)
+	xw.Focus()
+
+	err = xproto.ConfigureWindowChecked(X.Conn(), matchedWin, xproto.ConfigWindowStackMode, []uint32{xproto.StackModeAbove}).Check()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SelectToplevel selects a toplevel window based on a match specifier
 func SelectToplevel(toplevel Toplevel) error {
 	var matchSpecs []string = generateMatchSpecifiers(toplevel)
 	// Focus the toplevel matching the specifier
 	_, err := runWlrctlCommand(append([]string{"toplevel", "focus"}, matchSpecs...))
 	if err != nil {
-		return fmt.Errorf("error selecting toplevel: %v", err)
+		return selectToplevelXorg(toplevel)
 	}
 
 	return nil
