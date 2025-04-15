@@ -48,6 +48,7 @@ func listToplevelsXorg() ([]Toplevel, error) {
 	if err != nil {
 		return tpl, err
 	}
+	defer X.Conn().Close()
 
 	// List top-level windows
 	clientList, err := ewmh.ClientListGet(X)
@@ -133,6 +134,7 @@ func selectToplevelXorg(toplevel Toplevel) error {
 	if err != nil {
 		return err
 	}
+	defer X.Conn().Close()
 
 	clientList, err := ewmh.ClientListGet(X)
 	if err != nil {

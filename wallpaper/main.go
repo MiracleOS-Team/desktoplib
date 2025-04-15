@@ -125,6 +125,7 @@ func setWallpaperXorg(file string) error {
 	}
 
 	go func() {
+		defer X.Conn().Close()
 		// Load and convert image
 		ximg, err := xgraphics.NewFileName(X, file)
 		if err != nil {
